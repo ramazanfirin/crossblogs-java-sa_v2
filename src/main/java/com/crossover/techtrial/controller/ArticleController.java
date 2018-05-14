@@ -5,6 +5,7 @@ import java.util.List;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -39,8 +40,8 @@ public class ArticleController {
   }
   
   @GetMapping(path = "articles")
-  public ResponseEntity<List<Article>> findArticles() {
-      return new ResponseEntity<>(articleService.findAll(), HttpStatus.OK);
+  public ResponseEntity<List<Article>> findArticles(Pageable pageable) {
+      return new ResponseEntity<>(articleService.findAll(pageable).getContent(), HttpStatus.OK);
   }
 
   @PutMapping(path = "articles")

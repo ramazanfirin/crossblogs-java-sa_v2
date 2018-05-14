@@ -5,6 +5,7 @@ import java.util.List;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -53,12 +54,12 @@ public class CommentController {
   }
   
   @GetMapping(path = "comments")
-  public ResponseEntity<List<Comment>> findAllComments() {
-      return new ResponseEntity<>(commentService.findAll(), HttpStatus.OK);
+  public ResponseEntity<List<Comment>> findAllComments(Pageable pageable) {
+      return new ResponseEntity<>(commentService.findAll(pageable).getContent(), HttpStatus.OK);
   }
   
   @GetMapping(path = "comments/getByArticleId/{article-id}")
-  public ResponseEntity<List<Comment>> getComments(@PathVariable("article-id") Long articleId) {
-    return new ResponseEntity<>(commentService.findByArticleId(articleId), HttpStatus.OK);
+  public ResponseEntity<List<Comment>> getComments(@PathVariable("article-id") Long articleId,Pageable pageable) {
+    return new ResponseEntity<>(commentService.findByArticleId(articleId,pageable).getContent(), HttpStatus.OK);
   }
 }

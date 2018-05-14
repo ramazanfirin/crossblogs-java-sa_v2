@@ -3,7 +3,10 @@ package com.crossover.techtrial.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
 import com.crossover.techtrial.model.Comment;
 import com.crossover.techtrial.repository.CommentRepository;
 
@@ -14,14 +17,18 @@ public class CommentServiceImpl implements CommentService {
   CommentRepository commentRepository;
 
   /*
-   * Returns all comments.
+   * Returns all the Comments related to article along with Pagination information.
+   * (non-Javadoc)
+   * @see com.crossover.techtrial.service.CommentService#findAll()
    */
-  public List<Comment> findAll() {
-    return commentRepository.findAll();
+  public Page<Comment> findAll(Pageable pageable) {
+    return commentRepository.findAll(pageable);
   }
 
   /*
-   * Save the default article.
+   * save comment.
+   * (non-Javadoc)
+   * @see com.crossover.techtrial.service.CommentService#save(com.crossover.techtrial.model.Comment)
    */
   public Comment save(Comment comment) {
     return commentRepository.save(comment);
@@ -32,21 +39,27 @@ public class CommentServiceImpl implements CommentService {
    * (non-Javadoc)
    * @see com.crossover.techtrial.service.CommentService#findByArticleId(java.lang.Long)
    */
-  public List<Comment> findByArticleId(Long articleId) {
-	return commentRepository.findByArticleIdOrderByDate(articleId);
-}
+  public Page<Comment> findByArticleId(Long articleId,Pageable pageable) {
+	return commentRepository.findByArticleIdOrderByDate(articleId,pageable);
+  }
 
-/**
- * 
- */
-public Comment findById(Long id) {
-	return commentRepository.findById(id).orElse(null);
-}
+  /*
+   * FindById will find the specific Comment
+   * (non-Javadoc)
+   * @see com.crossover.techtrial.service.CommentService#findById(java.lang.Long)
+   */
+	public Comment findById(Long id) {
+		return commentRepository.findById(id).orElse(null);
+	}
 
-@Override
-public void delete(Long id) {
-	commentRepository.deleteById(id);
-	
-}
+	/*
+	   * Delete a particular comment with id.
+	   * (non-Javadoc)
+	   * @see com.crossover.techtrial.service.CommentService#delete(java.lang.Long)
+	   */
+	public void delete(Long id) {
+		commentRepository.deleteById(id);
+		
+	}
 
 }
