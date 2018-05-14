@@ -3,6 +3,7 @@ package com.crossover.techtrial.model;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -35,9 +36,10 @@ public class Comment implements Serializable {
   @Column(name = "email")
   String email;
 
-  @JsonIgnore
-  @ManyToOne
+//  @JsonIgnore
+  @ManyToOne(cascade=CascadeType.PERSIST)
   @JoinColumn(name = "article_id", referencedColumnName = "id")
+  @NotNull
   Article article;
 
   @Size(max = 32768)

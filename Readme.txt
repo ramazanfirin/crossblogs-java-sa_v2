@@ -31,6 +31,16 @@ Production Environment:
 
   1) Make sure to run unit tests,check code coverage, ensure application is compiling and all dependencies are included.
   2) Remove any build directories, compress whole project, and rename zipfile to be crossblogs-java-<YOUR-FULL-NAME>.zip. Please use dash "-" instead of any space
-
+  
+  
+  1)%70 test case covered
+  2)articleController.java-restpath düzenlendi.valid eklendli
+  2)article title size eklendi
+  ArticleRepository - JpaRepository eklendi.
+  ArticleControllerTest - MockMvc
+ commentController - restpath düzenlendi
+ article service findall
+  commentController - getcomments düzenlendi
+ 
 
 

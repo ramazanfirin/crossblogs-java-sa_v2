@@ -14,9 +14,9 @@ public class CommentServiceImpl implements CommentService {
   CommentRepository commentRepository;
 
   /*
-   * Returns all the Comments related to article along with Pagination information.
+   * Returns all comments.
    */
-  public List<Comment> findAll(Long articleId) {
+  public List<Comment> findAll() {
     return commentRepository.findAll();
   }
 
@@ -26,5 +26,27 @@ public class CommentServiceImpl implements CommentService {
   public Comment save(Comment comment) {
     return commentRepository.save(comment);
   }
+
+  /*
+   * Returns all the Comments related to article along with Pagination information.
+   * (non-Javadoc)
+   * @see com.crossover.techtrial.service.CommentService#findByArticleId(java.lang.Long)
+   */
+  public List<Comment> findByArticleId(Long articleId) {
+	return commentRepository.findByArticleIdOrderByDate(articleId);
+}
+
+/**
+ * 
+ */
+public Comment findById(Long id) {
+	return commentRepository.findById(id).orElse(null);
+}
+
+@Override
+public void delete(Long id) {
+	commentRepository.deleteById(id);
+	
+}
 
 }

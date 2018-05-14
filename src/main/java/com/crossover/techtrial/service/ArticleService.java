@@ -31,4 +31,10 @@ public interface ArticleService {
    */
   List<Article> search(String title);
 
+  /**
+   * Retun all items
+   * @return
+   */
+  List<Article> findAll();
+  
 }

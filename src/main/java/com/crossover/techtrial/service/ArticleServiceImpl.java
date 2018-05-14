@@ -29,5 +29,9 @@ public class ArticleServiceImpl implements ArticleService {
     return articleRepository
         .findTop10ByTitleContainingIgnoreCaseOrContentContainingIgnoreCase(search, search);
   }
+  
+  public List<Article> findAll() {
+		return articleRepository.findAll();
+	}
 
 }
