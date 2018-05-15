@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -54,6 +55,9 @@ public class CommentControllerTest {
   private MockMvc restUseRecordMockMvc;
   
   @Autowired
+  private PageableHandlerMethodArgumentResolver pageableArgumentResolver;
+  
+  @Autowired
   private GlobalExceptionHandler exceptionTranslator;
   
   @Autowired
@@ -67,6 +71,7 @@ public class CommentControllerTest {
   public void setup() throws Exception {
 	  MockitoAnnotations.initMocks(this);
       this.restUseRecordMockMvc = MockMvcBuilders.standaloneSetup(commentController)
+    		  .setCustomArgumentResolvers(pageableArgumentResolver)
           .setControllerAdvice(exceptionTranslator)
           .build();
   

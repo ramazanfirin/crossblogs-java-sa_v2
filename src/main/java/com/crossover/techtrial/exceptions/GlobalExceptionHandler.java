@@ -16,7 +16,7 @@ public class GlobalExceptionHandler {
 
   private static final Logger LOG = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-  @ExceptionHandler
+  @ExceptionHandler(Exception.class)
   public ResponseEntity<?> handle(Exception exception) {
     // general exception
     LOG.error("Exception: Unable to process this request. ", exception);
@@ -24,4 +24,7 @@ public class GlobalExceptionHandler {
         "message", "Unable to process this request.");
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
   }
+  
+  
+  
 }

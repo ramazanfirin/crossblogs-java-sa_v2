@@ -43,12 +43,12 @@ public class CommentController {
   }
   
   @PutMapping(path = "comments")
-  public ResponseEntity<Comment> updateArticle(@Valid @RequestBody Comment comment) {
+  public ResponseEntity<Comment> updateComment(@Valid @RequestBody Comment comment) {
     return new ResponseEntity<>(commentService.save(comment), HttpStatus.OK);
   }
   
   @DeleteMapping(path = "comments/{comment-id}")
-  public ResponseEntity<Article> deleteArticleById(@PathVariable("comment-id") Long id) {
+  public ResponseEntity<Void> deleteCommentById(@PathVariable("comment-id") Long id) {
     commentService.delete(id);
     return new ResponseEntity<>(HttpStatus.OK);
   }

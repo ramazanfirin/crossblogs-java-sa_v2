@@ -1,9 +1,15 @@
 package com.crossover.techtrial.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasSize;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -19,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -27,12 +34,6 @@ import com.crossover.techtrial.exceptions.GlobalExceptionHandler;
 import com.crossover.techtrial.exceptions.TestUtil;
 import com.crossover.techtrial.model.Article;
 import com.crossover.techtrial.repository.ArticleRepository;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -54,12 +55,16 @@ public class ArticleControllerTest {
   @Autowired
   private ArticleController articleController;
   
+  @Autowired
+  private PageableHandlerMethodArgumentResolver pageableArgumentResolver;
+  
   private Article article;
   
   @Before
   public void setup() throws Exception {
 	  MockitoAnnotations.initMocks(this);
       this.restUseRecordMockMvc = MockMvcBuilders.standaloneSetup(articleController)
+    	  .setCustomArgumentResolvers(pageableArgumentResolver)
           .setControllerAdvice(exceptionTranslator)
           .build();
   
@@ -203,29 +208,56 @@ public class ArticleControllerTest {
   @Test
   public void getAllArticles() throws Exception {
       articleRepository.saveAndFlush(article);
-      restUseRecordMockMvc.perform(get("/articles/"))
+      restUseRecordMockMvc.perform(get("/articles?sort=id,desc"))
           .andExpect(status().isOk())
           .andExpect(content().contentType(TestUtil.APPLICATION_JSON_UTF8))
           .andExpect(jsonPath("$.[*].id").value(hasItem(article.getId().intValue())))
           .andExpect(jsonPath("$.[*].title").value(hasItem("DEFAULT_TITLE")));
   }
   
+  @Test
+  public void getAllArticlesPagination() throws Exception {
+      articleRepository.saveAndFlush(article);
+   
+      Article article2 = new Article();
+      article2.setContent("CONTENT");
+	  article2.setDate(LocalDateTime.now());
+	  article2.setEmail("adasd@asdas");
+	  article2.setPublished(true);
+	  article2.setTitle("CONTENT");
+      
+	  articleRepository.saveAndFlush(article2);
+	  
+      restUseRecordMockMvc.perform(get("/articles?page=0&size=1"))
+          .andExpect(status().isOk())
+          .andExpect(content().contentType(TestUtil.APPLICATION_JSON_UTF8))
+          .andExpect(jsonPath("$", hasSize(1)));
+  }
+
+  @Test
+  public void search() throws Exception {
+      articleRepository.saveAndFlush(article);
+   
+      Article article2 = new Article();
+      article2.setContent("CONTENT");
+	  article2.setDate(LocalDateTime.now());
+	  article2.setEmail("adasd@asdas");
+	  article2.setPublished(true);
+	  article2.setTitle("CONTENT");
+      
+	  articleRepository.saveAndFlush(article2);
+	  
+	  int size = articleRepository.findAll().size();
+	  System.out.println(size);
+	  
+      restUseRecordMockMvc.perform(get("/articles/search?text=heat"))
+          .andExpect(status().isOk())
+          .andExpect(content().contentType(TestUtil.APPLICATION_JSON_UTF8))
+          .andExpect(jsonPath("$", hasSize(1)));
+  }
+
   
-//  @Test
-//  @Rollback(true)
-//  public void testArticleShouldBeCreated() throws Exception {
-//    HttpEntity<Object> article = getHttpEntity(
-//        "{\"email\": \"user1@gmail.com\", \"title\": \"hello\" }");
-//    ResponseEntity<Article> resultAsset = template.postForEntity("/articles", article,
-//        Article.class);resultAsset.getBody().getId()
-//    System.out.println("");
-//    //Assert.assertNotNull(resultAsset.getBody().getId());
-//  }
   
-//  private HttpEntity<Object> getHttpEntity(Object body) {
-//	    HttpHeaders headers = new HttpHeaders();
-//	    headers.setContentType(MediaType.APPLICATION_JSON);
-//	    return new HttpEntity<Object>(body, headers);
-//	  }
-// 
+  
+
 }
