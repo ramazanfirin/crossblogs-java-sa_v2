@@ -102,7 +102,7 @@ public class CommentControllerTest {
 	  article.setPublished(true);
 	  article.setTitle("DEFAULT_TITLE");
 	  
-	  comment.setArticle(article);
+	  //comment.setArticle(article);
 	  return comment;
   }
   
@@ -114,13 +114,10 @@ public class CommentControllerTest {
   
   @Test
   public void createComment() throws Exception {
-//	  Article articleNew=articleRepository.saveAndFlush(article);
-//	  comment.setArticle(articleNew);
+	  articleRepository.saveAndFlush(article);
+	  System.out.println(article.getId());
 	  int databaseSizeBeforeCreate = commentRepository.findAll().size();
-
-	  System.out.println(comment.getArticle().getTitle());
-	  
-      restUseRecordMockMvc.perform(post("/comments")
+      restUseRecordMockMvc.perform(post("/articles/"+article.getId()+"/comments/")
           .contentType(TestUtil.APPLICATION_JSON_UTF8)
           .content(TestUtil.convertObjectToJsonBytes(comment)))
           .andExpect(status().isCreated());
@@ -191,8 +188,10 @@ public class CommentControllerTest {
   
   @Test
   public void getCommentsByArticleId() throws Exception {
+	  articleRepository.saveAndFlush(article);
+	  comment.setArticle(article);
 	  commentRepository.saveAndFlush(comment);
-	  restUseRecordMockMvc.perform(get("/comments/getByArticleId/{article-id}", comment.getArticle().getId()))
+	  restUseRecordMockMvc.perform(get("/articles/{article-id}/comments", article.getId()))
           .andExpect(status().isOk())
           .andExpect(content().contentType(TestUtil.APPLICATION_JSON_UTF8))
           .andExpect(jsonPath("$.[*].id").value(hasItem(comment.getId().intValue())))

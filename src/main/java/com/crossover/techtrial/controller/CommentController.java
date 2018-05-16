@@ -29,19 +29,18 @@ public class CommentController {
   @Autowired
   ArticleService articleService;
 
-  @PostMapping(path = "comments")
-  public ResponseEntity<Comment> createComment(@Valid @RequestBody Comment comment) {
-    return new ResponseEntity<>(commentService.save(comment), HttpStatus.CREATED);
+  @PostMapping(path = "articles/{article-id}/comments/")
+  public ResponseEntity<Comment> createComment(@PathVariable(value = "article-id") Long articleId,
+		  @Valid  @RequestBody Comment comment) {
+    
+	Article article = articleService.findById(articleId);
+	if (article != null){
+	     comment.setArticle(articleService.findById(articleId));
+    	 return new ResponseEntity<>(commentService.save(comment), HttpStatus.CREATED);
+	}else
+		 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
   }
 
-  @GetMapping(path = "comments/{comment-id}")
-  public ResponseEntity<Comment> getCommentById(@PathVariable("comment-id") Long id) {
-    Comment comment = commentService.findById(id);
-    if (comment != null)
-      return new ResponseEntity<>(comment, HttpStatus.OK);
-    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-  }
-  
   @PutMapping(path = "comments")
   public ResponseEntity<Comment> updateComment(@Valid @RequestBody Comment comment) {
     return new ResponseEntity<>(commentService.save(comment), HttpStatus.OK);
@@ -53,13 +52,21 @@ public class CommentController {
     return new ResponseEntity<>(HttpStatus.OK);
   }
   
+  @GetMapping(path = "comments/{comment-id}")
+  public ResponseEntity<Comment> getCommentById(@PathVariable("comment-id") Long id) {
+	  Comment comment = commentService.findById(id);
+	    if (comment != null)
+	      return new ResponseEntity<>(comment, HttpStatus.OK);
+	    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+  }
+  
   @GetMapping(path = "comments")
   public ResponseEntity<List<Comment>> findAllComments(Pageable pageable) {
       return new ResponseEntity<>(commentService.findAll(pageable).getContent(), HttpStatus.OK);
   }
-  
-  @GetMapping(path = "comments/getByArticleId/{article-id}")
+
+  @GetMapping(path = "articles/{article-id}/comments")
   public ResponseEntity<List<Comment>> getComments(@PathVariable("article-id") Long articleId,Pageable pageable) {
-    return new ResponseEntity<>(commentService.findByArticleId(articleId,pageable).getContent(), HttpStatus.OK);
+	  return new ResponseEntity<>(commentService.findByArticleId(articleId,pageable).getContent(), HttpStatus.OK);
   }
 }

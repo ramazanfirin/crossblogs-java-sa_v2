@@ -39,7 +39,7 @@ public class Comment implements Serializable {
 //  @JsonIgnore
   @ManyToOne(cascade=CascadeType.PERSIST)
   @JoinColumn(name = "article_id", referencedColumnName = "id")
-  @NotNull
+//  @NotNull
   Article article;
 
   @Size(max = 32768)
